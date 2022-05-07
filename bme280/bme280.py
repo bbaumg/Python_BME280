@@ -54,7 +54,8 @@ class bme280(object):
     self.bus = smbus.SMBus(1)
     self.address = address
     self.chipID = chipID
-    logging.debug("Address = " + str(self.address) + ", ChipID = " + str(self.chipID))
+    logging.debug("Address = " + str(hex(self.address)) 
+      + ", ChipID = " + str(hex(self.chipID)))
 
     # Calibrate the device
 
@@ -170,8 +171,9 @@ class bme280(object):
     results['TempF'] = round(results["TempC"]*1.8+32, 1)
     results['Pressure'] = round(pressure/100.0, 1)
     results['Humidity'] = round(humidity, 1)
-    logging.debug("Readings:  Temp C = " + str(results['TempC']) + 
+    logging.info("Readings:  Temp C = " + str(results['TempC']) + 
       ", Temp F = " + str(results['TempF']) + 
       ", Pressure = " + str(results['Pressure']) + 
       ", Humid = " + str(results['Humidity']))
+    logging.debug(results)
     return results

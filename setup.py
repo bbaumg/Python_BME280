@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
 	name='bme280',
-	version='1.0.1',
+	version='1.0.2',
 	description='Driver for sending Thingspeak data',
 	url='https://github.com/bbaumg/Python_BME280',
 	author='bbaumg',
