@@ -50,14 +50,11 @@ MODE = 1
 
 class bme280(object):
   def __init__(self, address=REG_ADDR, chipID=REG_CHIPID):
-    """
-    Initalization "constructor" for the object.
-    """
     logging.info("Instantiating a bme280 object")
-
     self.bus = smbus.SMBus(1)
     self.address = address
     self.chipID = chipID
+    logging.debug("Address = " + str(self.address) + ", ChipID = " + str(self.chipID))
 
     # Calibrate the device
 
@@ -82,14 +79,16 @@ class bme280(object):
     return result
 
   def readBME280ID(self):
+    logging.info("Reading the BME280s chip version")
     deviceData = self.bus.read_i2c_block_data(self.address, self.chipID, 2)
     deviceInfo = dict()
     deviceInfo['ChipID'] = deviceData[0]
     deviceInfo['ChipVeresion'] = deviceData[1]
+    logging.info("Chip ID = " + str(deviceInfo['ChipID']) + ", Chip Version = " + str(deviceInfo['ChipVeresion']))
     return deviceInfo
 
   def readBME280Data(self):
-
+    logging.info("Starting...  Read BME280's data")
     self.bus.write_byte_data(self.address, REG_CONTROL_HUM, OVERSAMPLE_HUM)
 
     control = OVERSAMPLE_TEMP<<5 | OVERSAMPLE_PRES<<2 | MODE
@@ -132,7 +131,9 @@ class bme280(object):
     pres_raw = (data[0] << 12) | (data[1] << 4) | (data[2] >> 4)
     temp_raw = (data[3] << 12) | (data[4] << 4) | (data[5] >> 4)
     hum_raw = (data[6] << 8) | data[7]
-
+    logging.debug("Raw Data:  Pressure = " + str(pres_raw) + 
+      ", Temp = " + str(temp_raw) + 
+      ", Humid = " + str(hum_raw))
     #Refine temperature
     var1 = ((((temp_raw>>3)-(dig_T1<<1)))*(dig_T2)) >> 11
     var2 = (((((temp_raw>>4) - (dig_T1)) * ((temp_raw>>4) - (dig_T1))) >> 12) * (dig_T3)) >> 14
@@ -169,4 +170,8 @@ class bme280(object):
     results['TempF'] = round(results["TempC"]*1.8+32, 1)
     results['Pressure'] = round(pressure/100.0, 1)
     results['Humidity'] = round(humidity, 1)
+    logging.debug("Readings:  Temp C = " + str(results['TempC']) + 
+      ", Temp F = " + str(results['TempF']) + 
+      ", Pressure = " + str(results['Pressure']) + 
+      ", Humid = " + str(results['Humidity']))
     return results
