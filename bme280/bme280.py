@@ -26,6 +26,8 @@
 import smbus
 import time
 import logging
+import os
+import sys
 from ctypes import c_short
 from ctypes import c_byte
 from ctypes import c_ubyte
@@ -51,6 +53,11 @@ MODE = 1
 class bme280(object):
   def __init__(self, address=REG_ADDR, chipID=REG_CHIPID):
     logging.info("Instantiating a bme280 object")
+    if(os.path.exists("/dev/i2c-1") or os.path.exists("/dev/i2c/1")):
+      logging.info("i2c is enabled... OK to proceed")
+    else:
+      logging.critical("ERROR i2c is NOT enabled")
+      sys.exit("ERROR:  i2c is NOT enabled.  Use 'sudo raspi-config' to enable it")
     self.bus = smbus.SMBus(1)
     self.address = address
     self.chipID = chipID
